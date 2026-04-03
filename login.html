@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Lokrakshak</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="login-page">
+
+    <div class="login-card anim">
+        <div class="login-logo">
+            <div class="login-logo-icon"><i data-lucide="building-2" width="30" height="30"></i></div>
+            <div class="logo-text">Lokrakshak</div>
+            <div class="logo-sub">Real Property Center &middot; Admin Portal</div>
+        </div>
+
+        <h2>Admin Access</h2>
+        <p>Enter your credentials to manage property listings.</p>
+
+        <div class="admin-form-group">
+            <label><i data-lucide="user" width="14" height="14"></i> Username</label>
+            <input type="text" id="username" placeholder="Enter username" autocomplete="username">
+        </div>
+        <div class="admin-form-group">
+            <label><i data-lucide="lock" width="14" height="14"></i> Password</label>
+            <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+        </div>
+
+        <button id="login-btn" class="btn" style="width:100%; font-size:0.95rem; margin-top:8px;">
+            <i data-lucide="log-in" width="16" height="16"></i> Login
+        </button>
+
+        <div class="login-back">
+            <a href="index.html"><i data-lucide="arrow-left" width="14" height="14"></i> Back to Website</a>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+
+        function doLogin() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value;
+            if (!u || !p) { showToast('Please fill in all fields.', 'error'); return; }
+            login(u, p);
+        }
+
+        document.getElementById('login-btn').addEventListener('click', doLogin);
+        document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    </script>
+</body>
+</html>

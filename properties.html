@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Properties | Lokrakshak Real Property Center</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en', includedLanguages: 'en,gu,hi',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE, autoDisplay: false
+            }, 'google_translate_element');
+        }
+    </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="top-bar-left"><i data-lucide="shield-check" width="14" height="14"></i> Govt. Reg. No. AG/GJ/NVS/JLP/AA04341/040828R</div>
+    <div class="lang-widget"><span><i data-lucide="globe" width="13" height="13"></i> Translate:</span><div id="google_translate_element"></div></div>
+</div>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon"><i data-lucide="building-2" width="22" height="22"></i></div>
+        <div>
+            <div class="logo-text">Lokrakshak Real Property Center</div>
+            <div class="logo-sub">Dr. R.R. Mishra &middot; Property Dealer &middot; Navsari</div>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="index.html"><i data-lucide="home" width="15" height="15"></i> Home</a></li>
+            <li><a href="about.html"><i data-lucide="user-circle" width="15" height="15"></i> About Us</a></li>
+            <li><a href="properties.html" class="active"><i data-lucide="grid-3x3" width="15" height="15"></i> Properties</a></li>
+            <li><a href="contact.html"><i data-lucide="phone" width="15" height="15"></i> Contact</a></li>
+        </ul>
+    </nav>
+    <button class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</header>
+
+<div class="mobile-nav">
+    <button class="mobile-nav-close"><i data-lucide="x" width="20" height="20"></i></button>
+    <a href="index.html"><i data-lucide="home" width="22" height="22"></i> Home</a>
+    <a href="about.html"><i data-lucide="user-circle" width="22" height="22"></i> About Us</a>
+    <a href="properties.html" class="active"><i data-lucide="grid-3x3" width="22" height="22"></i> Properties</a>
+    <a href="contact.html"><i data-lucide="phone" width="22" height="22"></i> Contact</a>
+</div>
+
+<div class="page-hero">
+    <div class="eyebrow-tag"><i data-lucide="list-checks" width="13" height="13"></i> Verified Listings</div>
+    <h1>Current Property Listings</h1>
+    <p>Browse our legally verified listings across the Navsari district. All transactions handled with full documentation.</p>
+</div>
+
+<div class="container">
+
+    <!-- Gujarati Banner -->
+    <div class="gujarati-banner">
+        <i data-lucide="landmark" width="20" height="20"></i>
+        <span>સૌથી વધુ વિકસિત ગુજરાત રાજ્યની ઐતિહાસિક સંસ્કારી નગરી નવસારી જિલ્લામાં મકાન, દુકાન, ફ્લેટ, બંગલો, રો-હાઉસ, જમીન, પ્લોટ, ફાર્મ-હાઉસ લે-વેચ એક જ સ્થળે.</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters" id="filter-bar">
+        <button class="filter-btn active" data-filter="All"><i data-lucide="layout-grid" width="14" height="14"></i> All Properties</button>
+        <button class="filter-btn" data-filter="Residential"><i data-lucide="building" width="14" height="14"></i> Residential</button>
+        <button class="filter-btn" data-filter="Commercial"><i data-lucide="store" width="14" height="14"></i> Commercial</button>
+        <button class="filter-btn" data-filter="Land"><i data-lucide="trees" width="14" height="14"></i> Land / Agriculture</button>
+        <button class="filter-btn" data-filter="Industrial"><i data-lucide="factory" width="14" height="14"></i> Industrial</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="property-grid" id="properties-container"></div>
+
+</div>
+
+<footer>
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-brand-icon"><i data-lucide="building-2" width="22" height="22"></i></div>
+                <div class="footer-brand-text">
+                    <div class="name">Lokrakshak Real Property Center</div>
+                    <div class="tagline">Dr. R.R. Mishra &middot; Navsari, Gujarat</div>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="index.html"><i data-lucide="home" width="14" height="14"></i> Home</a>
+                <a href="about.html"><i data-lucide="user-circle" width="14" height="14"></i> About Us</a>
+                <a href="properties.html"><i data-lucide="grid-3x3" width="14" height="14"></i> Properties</a>
+                <a href="contact.html"><i data-lucide="phone" width="14" height="14"></i> Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 Lokrakshak Real Property Center. All Rights Reserved.</span>
+            <span>Govt. Reg. No. AG/GJ/NVS/JLP/AA04341/040828R</span>
+        </div>
+    </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+    let activeFilter = 'All';
+
+    // Icon map for property types
+    const typeIcons = {
+        Residential: 'building',
+        Commercial: 'store',
+        Land: 'trees',
+        Industrial: 'factory'
+    };
+
+    function renderProperties() {
+        const container = document.getElementById('properties-container');
+        let properties = getProperties();
+        if (activeFilter !== 'All') properties = properties.filter(p => p.type === activeFilter);
+
+        container.innerHTML = '';
+
+        if (properties.length === 0) {
+            container.innerHTML = `
+                <div class="no-properties">
+                    <div class="ni"><i data-lucide="search-x" width="32" height="32"></i></div>
+                    <h3>No listings in this category</h3>
+                    <p>Please check back later or browse another category.</p>
+                </div>`;
+            lucide.createIcons();
+            return;
+        }
+
+        properties.forEach(prop => {
+            const icon = typeIcons[prop.type] || 'home';
+            const card = document.createElement('div');
+            card.className = 'property-card anim';
+            card.innerHTML = `
+                <img src="${prop.image}" alt="${prop.title}" class="property-image"
+                     onerror="this.src='https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80'">
+                <div class="property-card-content">
+                    <div>
+                        <div class="cert-badge"><i data-lucide="${icon}" width="11" height="11"></i> ${prop.type}</div>
+                        <h3>${prop.title}</h3>
+                        <div class="price-tag" style="margin-bottom:12px;"><i data-lucide="indian-rupee" width="15" height="15"></i> ${prop.price}</div>
+                        <p>${prop.description}</p>
+                    </div>
+                    <a href="contact.html" class="btn btn-sm" style="text-align:center; margin-top:16px; display:flex;">
+                        <i data-lucide="message-circle" width="14" height="14"></i> Inquire Now
+                    </a>
+                </div>`;
+            container.appendChild(card);
+        });
+
+        lucide.createIcons();
+    }
+
+    document.getElementById('filter-bar').addEventListener('click', function(e) {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        renderProperties();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProperties();
+        lucide.createIcons();
+    });
+</script>
+</body>
+</html>

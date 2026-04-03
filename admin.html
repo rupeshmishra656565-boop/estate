@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Lokrakshak</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background: #f0f2f5; }
+    </style>
+</head>
+<body>
+
+<script src="app.js"></script>
+<script>checkAuth();</script>
+
+<!-- ADMIN TOP BAR -->
+<div class="admin-topbar">
+    <div class="logo">
+        <div class="logo-icon"><i data-lucide="layout-dashboard" width="20" height="20"></i></div>
+        <div>
+            <div class="logo-text">Admin Dashboard</div>
+            <div class="logo-sub">Lokrakshak Property Center</div>
+        </div>
+    </div>
+    <div class="admin-actions">
+        <a href="index.html" target="_blank" class="btn btn-sm btn-outline" style="border-color:rgba(255,255,255,0.35); color:white;">
+            <i data-lucide="external-link" width="14" height="14"></i> View Site
+        </a>
+        <button onclick="logout()" class="btn btn-sm btn-danger">
+            <i data-lucide="log-out" width="14" height="14"></i> Logout
+        </button>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="admin-page">
+    <h1 class="admin-page-title"><i data-lucide="settings" width="26" height="26"></i> Property Management</h1>
+    <p class="admin-sub">Add, edit, or remove property listings. Changes appear immediately on the public website.</p>
+
+    <div class="admin-layout">
+
+        <!-- FORM -->
+        <div class="admin-form-panel">
+            <h2 id="form-title"><i data-lucide="plus-circle" width="20" height="20"></i> Add New Property</h2>
+
+            <div class="admin-form-group">
+                <label><i data-lucide="type" width="13" height="13"></i> Property Title</label>
+                <input type="text" id="title" placeholder="e.g., 2BHK Flat near Station">
+            </div>
+            <div class="admin-form-group">
+                <label><i data-lucide="tag" width="13" height="13"></i> Category</label>
+                <select id="type">
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Land">Land / Agriculture</option>
+                    <option value="Industrial">Industrial / Farmhouse</option>
+                </select>
+            </div>
+            <div class="admin-form-group">
+                <label><i data-lucide="indian-rupee" width="13" height="13"></i> Price (₹)</label>
+                <input type="text" id="price" placeholder="e.g., ₹ 50,00,000">
+            </div>
+            <div class="admin-form-group">
+                <label><i data-lucide="image" width="13" height="13"></i> Property Image</label>
+                <input type="file" id="image-upload" accept="image/*"
+                       style="padding:10px; background:white; border:1.5px dashed var(--border); border-radius:8px; cursor:pointer;">
+                <small id="image-help"><i data-lucide="info" width="11" height="11"></i> Upload images under 2MB for best performance.</small>
+            </div>
+            <div class="admin-form-group">
+                <label><i data-lucide="align-left" width="13" height="13"></i> Description</label>
+                <textarea id="description" placeholder="Describe location, amenities, and condition..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button id="submit-btn" class="btn" style="flex:1;" onclick="handleSubmit()">
+                    <i data-lucide="upload-cloud" width="15" height="15"></i> Publish Property
+                </button>
+                <button id="cancel-btn" class="btn btn-navy btn-sm" style="display:none;" onclick="cancelEdit()">
+                    <i data-lucide="x" width="14" height="14"></i> Cancel
+                </button>
+            </div>
+        </div>
+
+        <!-- LISTINGS -->
+        <div class="admin-list">
+            <h2><i data-lucide="list" width="22" height="22"></i> Existing Listings</h2>
+            <div id="admin-property-list"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let editingId = null;
+
+    function handleSubmit() {
+        const title = document.getElementById('title').value.trim();
+        const type  = document.getElementById('type').value;
+        const price = document.getElementById('price').value.trim();
+        const desc  = document.getElementById('description').value.trim();
+        const file  = document.getElementById('image-upload').files[0];
+
+        if (!title || !price || !desc) { showToast('Please fill in all required fields.', 'error'); return; }
+        if (!editingId && !file) { showToast('Please upload a property image.', 'error'); return; }
+
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) { showToast('Image exceeds 2MB. Please use a smaller file.', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = e => saveData(e.target.result, { title, type, price, description: desc });
+            reader.readAsDataURL(file);
+        } else {
+            saveData(null, { title, type, price, description: desc });
+        }
+    }
+
+    function saveData(base64Image, data) {
+        if (base64Image) data.image = base64Image;
+        if (editingId) {
+            updateProperty(editingId, data);
+            showToast('Property updated successfully!', 'success');
+        } else {
+            addProperty(data);
+            showToast('Property published successfully!', 'success');
+        }
+        cancelEdit();
+        renderAdminProperties();
+    }
+
+    function startEdit(id) {
+        const prop = getProperties().find(p => p.id === id);
+        if (!prop) return;
+        editingId = id;
+        document.getElementById('title').value       = prop.title;
+        document.getElementById('type').value        = prop.type;
+        document.getElementById('price').value       = prop.price;
+        document.getElementById('description').value = prop.description;
+        document.getElementById('form-title').innerHTML      = '<i data-lucide="edit" width="20" height="20"></i> Edit Property';
+        document.getElementById('submit-btn').innerHTML      = '<i data-lucide="save" width="15" height="15"></i> Update Property';
+        document.getElementById('cancel-btn').style.display  = 'block';
+        document.getElementById('image-help').innerHTML      = '<i data-lucide="info" width="11" height="11"></i> Leave empty to keep current image, or upload a new one.';
+        lucide.createIcons();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+        editingId = null;
+        document.getElementById('title').value       = '';
+        document.getElementById('type').value        = 'Residential';
+        document.getElementById('price').value       = '';
+        document.getElementById('description').value = '';
+        document.getElementById('image-upload').value = '';
+        document.getElementById('form-title').innerHTML      = '<i data-lucide="plus-circle" width="20" height="20"></i> Add New Property';
+        document.getElementById('submit-btn').innerHTML      = '<i data-lucide="upload-cloud" width="15" height="15"></i> Publish Property';
+        document.getElementById('cancel-btn').style.display  = 'none';
+        document.getElementById('image-help').innerHTML      = '<i data-lucide="info" width="11" height="11"></i> Upload images under 2MB for best performance.';
+        lucide.createIcons();
+    }
+
+    const typeIcons = { Residential: 'building', Commercial: 'store', Land: 'trees', Industrial: 'factory' };
+
+    function renderAdminProperties() {
+        const container = document.getElementById('admin-property-list');
+        const properties = getProperties();
+        container.innerHTML = '';
+
+        if (properties.length === 0) {
+            container.innerHTML = `<div class="no-properties" style="grid-column:1/-1;">
+                <div class="ni"><i data-lucide="inbox" width="32" height="32"></i></div>
+                <h3>No listings yet</h3><p>Add your first property using the form.</p></div>`;
+            lucide.createIcons();
+            return;
+        }
+
+        properties.forEach(prop => {
+            const icon = typeIcons[prop.type] || 'home';
+            const card = document.createElement('div');
+            card.className = 'admin-card';
+            card.innerHTML = `
+                <img src="${prop.image}" alt="${prop.title}"
+                     onerror="this.src='https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=400&q=70'">
+                <div class="admin-card-body">
+                    <div>
+                        <div class="cert-badge" style="margin-bottom:8px;">
+                            <i data-lucide="${icon}" width="11" height="11"></i> ${prop.type}
+                        </div>
+                        <h3>${prop.title}</h3>
+                        <div class="price-tag" style="font-size:0.85rem; padding:4px 10px; margin-top:6px;">
+                            <i data-lucide="indian-rupee" width="13" height="13"></i> ${prop.price}
+                        </div>
+                    </div>
+                    <div class="admin-card-actions">
+                        <button onclick="startEdit(${prop.id})" class="btn btn-teal btn-sm">
+                            <i data-lucide="pencil" width="13" height="13"></i> Edit
+                        </button>
+                        <button onclick="deleteProperty(${prop.id})" class="btn btn-danger btn-sm">
+                            <i data-lucide="trash-2" width="13" height="13"></i> Delete
+                        </button>
+                    </div>
+                </div>`;
+            container.appendChild(card);
+        });
+
+        lucide.createIcons();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+        renderAdminProperties();
+    });
+</script>
+</body>
+</html>
